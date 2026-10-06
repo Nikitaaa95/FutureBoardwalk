@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I Get There</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f0e6; --paper: #fffaf2; --ink: #3b2a20; --soft: #7a6352; --line: #e4d8c7; --choc: #4e3226;
+    --purpose: #b9784a; --purpose-bg: #f2dfcc;
+    --belonging: #b8705f; --belonging-bg: #f4ddd3;
+    --presence: #6f7f8c; --presence-bg: #e2e7ea;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+  /* top bar */
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 0; flex-wrap: wrap; }
+  .bar .right { display: flex; gap: 8px; flex-wrap: wrap; }
+  .view { display: inline-flex; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 3px; font-size: 14px; }
+  .view a { padding: 4px 12px; border-radius: 999px; text-decoration: none; color: var(--soft); white-space: nowrap; }
+  .view a:hover { color: var(--ink); }
+  .view a[aria-current="page"] { background: var(--choc); color: #fbf4e8; }
+  .pill { display: inline-block; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 7px 14px; font-size: 14px; text-decoration: none; white-space: nowrap; cursor: pointer; }
+  .pill:hover { border-color: var(--soft); }
+
+  /* hero */
+  header.hero { padding: 32px 0 8px; max-width: 760px; }
+  .eyebrow { margin: 0 0 10px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #8a3b1e; }
+  h1 { margin: 0 0 18px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(36px, 6vw, 60px); line-height: 1.02; color: var(--choc); }
+  .lede { margin: 0; font-size: 18px; color: var(--soft); }
+  .lede em { font-family: "Fraunces", Georgia, serif; color: var(--ink); }
+
+  /* filter chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0; }
+  .chip { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 14px; }
+  .chip[aria-pressed="true"] { background: var(--choc); border-color: var(--choc); color: #fbf4e8; }
+  .chip .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 7px; }
+
+  /* the kolam and its reading panel */
+  .stage { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 32px; align-items: start; margin: 22px 0 40px; }
+  .floor { position: relative; border-radius: 22px; padding: 18px;
+    background: radial-gradient(circle, rgba(78,50,38,.13) 1.2px, transparent 1.6px) 0 0 / 22px 22px, var(--paper);
+    border: 1px solid var(--line); }
+  .floor svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .floor .hint { margin: 6px 0 0; text-align: center; font-size: 13px; color: var(--soft); }
+
+  .cell { cursor: pointer; transition: opacity .35s, filter .2s; outline: none; }
+  .cell:hover, .cell:focus-visible { filter: brightness(1.08) saturate(1.1); }
+  .cell.in, .deco.in { animation: bloom .6s cubic-bezier(.3, 1.2, .5, 1) both; }
+  @keyframes bloom { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+  .deco { transition: opacity .35s; }
+  body[data-only] :is(.cell, .deco) { opacity: .16; }
+  body[data-only="purpose"] [data-set="purpose"]:is(.cell, .deco),
+  body[data-only="belonging"] [data-set="belonging"]:is(.cell, .deco),
+  body[data-only="presence"] [data-set="presence"]:is(.cell, .deco) { opacity: 1; }
+  .rnum { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 12px; fill: var(--choc); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+  .rnum.on { fill: #8a3b1e; font-size: 14px; }
+  .arcLabel { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 19px; letter-spacing: .04em; }
+
+  .panel { position: sticky; top: 20px; background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 24px 24px 20px; min-height: 420px; }
+  .panel .tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--soft); font-weight: 600; }
+  .panel h2 { margin: 4px 0 4px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 30px; line-height: 1.1; color: var(--choc); }
+  .panel .def { margin: 0 0 12px; color: var(--soft); }
+  .depth { display: flex; gap: 3px; margin: 0 0 18px; }
+  .depth i { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+  .depth i.on { background: var(--choc); }
+  .entries { display: grid; gap: 10px; }
+  .entry { display: block; width: 100%; text-align: left; border: 0; border-left: 4px solid var(--c); background: transparent; border-radius: 4px 12px 12px 4px; padding: 10px 14px; cursor: pointer; transition: background .25s; }
+  .entry:hover { background: var(--bg-c); }
+  .entry.on { background: var(--bg-c); }
+  .entry .who { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--c); font-weight: 700; }
+  .entry p { margin: 4px 0 0; color: var(--soft); }
+  .entry.on p { color: var(--ink); font-size: 18px; }
+  body[data-only] .entry:not(.keep) { display: none; }
+  .steps { display: flex; justify-content: space-between; gap: 8px; margin-top: 18px; }
+  .steps .pill:disabled { opacity: .4; cursor: default; }
+  .intro p { margin: 0 0 14px; }
+  .intro .lead { font-family: "Kalam", cursive; font-size: 22px; line-height: 1.3; color: var(--choc); }
+
+  [data-set="purpose"] { --c: var(--purpose); --bg-c: var(--purpose-bg); }
+  [data-set="belonging"] { --c: var(--belonging); --bg-c: var(--belonging-bg); }
+  [data-set="presence"] { --c: var(--presence); --bg-c: var(--presence-bg); }
+
+  /* the three changes */
+  .sets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 8px; }
+  .set { background: var(--paper); border: 1px solid var(--line); border-top: 5px solid var(--c); border-radius: 14px; padding: 20px 20px 22px; }
+  .set .tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--c); font-weight: 600; }
+  .set h3 { margin: 6px 0 4px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.15; color: var(--choc); }
+  .set .rooms { margin: 0 0 10px; font-size: 13px; color: var(--soft); }
+  .set p.why { margin: 0; }
+
+  /* close */
+  footer.end { padding: 56px 0 72px; text-align: center; }
+  footer.end .note { display: inline-block; max-width: 460px; padding: 34px 26px 26px; background: #ffe58a; transform: rotate(-1.5deg);
+    font-family: "Kalam", cursive; font-size: 23px; line-height: 1.3; color: #3a2a1c; box-shadow: 0 12px 24px -10px rgba(0,0,0,.35); position: relative; }
+  footer.end .note::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; margin-left: -45px; background: rgba(255,255,255,.6); transform: rotate(-3deg); }
+  footer.end .actions { margin-top: 36px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .cite { margin-top: 28px; font-size: 13px; color: var(--soft); }
+
+  @media (max-width: 900px) {
+    .stage { grid-template-columns: 1fr; }
+    .panel { position: static; min-height: 0; }
+    .sets { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .cell.in, .deco.in { animation: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="bar">
+    <a class="pill" href="dream-home.html">← Back to the house</a>
+    <div class="right">
+      <div class="view" role="group" aria-label="View"><a aria-current="page" href="levers.html">View as mandala</a><a href="levers-list.html">Read as a list</a></div>
+      <a class="pill" href="index.html">Street</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">After the walk-through</p>
+    <h1>How I get there</h1>
+    <p class="lede">The house shows who I am in 2031. This kolam shows how I get there. Donella Meadows named twelve places to intervene in a system, from the easiest to change (<em>numbers</em>, on the outer ring) to the most powerful (<em>paradigms</em>, at the center). Each petal is one of three changes I want to make, drawn through all twelve.</p>
+    <div class="chips" id="chips" role="group" aria-label="Show which changes"></div>
+  </header>
+
+  <section class="stage">
+    <div class="floor">
+      <svg id="kolam" viewBox="-400 -400 800 800" role="group" aria-label="Twelve leverage points, three changes"></svg>
+      <p class="hint">Tap any cell. Arrow keys move between rings and petals.</p>
+    </div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </section>
+
+  <section class="sets" id="sets" aria-label="The three changes"></section>
+
+  <footer class="end">
+    <div class="note">The outer rings are where I start. The center is why it lasts.</div>
+    <div class="actions">
+      <a class="pill" href="dream-home.html">← Back to the house</a>
+      <a class="pill" href="levers-list.html">Read as a list</a>
+    </div>
+    <p class="cite">Levers from Donella Meadows, “Leverage Points: Places to Intervene in a System” (1999).</p>
+  </footer>
+</div>
+
+<script>
+const SETS = [
+  { id: 'purpose', tag: 'Purpose', name: 'Work that closes the gap', rooms: 'The study · the front door',
+    why: 'Income and wealth inequality decides who gets a home, good health and a voice, and too much political messaging talks past the people it’s meant to serve. I want my career aimed at that gap, and I want it to last, which means work I can keep doing for decades.' },
+  { id: 'belonging', tag: 'Belonging', name: 'A table that’s always open', rooms: 'The kitchen · the Nalukettu · the bedroom',
+    why: 'Community, culture and family make the work worth doing, and they carry me when it’s hard. Right now they get the leftovers of my time. In 2031 they get the best of it.' },
+  { id: 'presence', tag: 'Presence', name: 'Warm, confident, imperfect', rooms: 'The open space · the garden · the closet · the library',
+    why: 'Perfectionism and a phone in my hand keep me half-present. To be a lantern for other people, I have to be steady myself: rested, grounded and comfortable in my own skin.' },
+];
+
+// from the shallowest lever (12) to the deepest (1); each change in the same order as SETS
+const LEVERS = [
+  { n: 12, name: 'Numbers', def: 'Constants and parameters such as subsidies, taxes and standards', how: [
+    'My work ends at 7pm, my weekends are mine, and I use every vacation day. I judge campaigns by turnout and wins, not by hours logged.',
+    'Chai every day, crafting with Arthi every week, Malayali food every week, and a five-course dinner a few times a year.',
+    'Meditation every morning, a book in the garden on some afternoons, and screen time cut to what I actually need.' ] },
+  { n: 11, name: 'Buffers', def: 'The sizes of stabilizing stocks relative to their flows', how: [
+    'Savings and a network deep enough that I can turn down a campaign that doesn’t fit, and take the one that matters even when it pays less.',
+    'A stocked pantry, extra chairs and a pot of chai on the stove, so people can drop in without a plan.',
+    'Unscheduled mornings. Time is my buffer: room to absorb a hard day without falling apart.' ] },
+  { n: 10, name: 'Stock-and-flow structures', def: 'Physical systems and their nodes of intersection', how: [
+    'The study is upstairs, behind a door that closes. Work lives in one room, and my phone stays on that desk.',
+    'The house is built for gathering: a courtyard at its center, a table that seats eight, and the phone left by the front door.',
+    'The house does the work for me: the phone on the entry table, books within reach, and the garden just outside the kitchen.' ] },
+  { n: 9, name: 'Delays', def: 'The lengths of time relative to the rates of system changes', how: [
+    'Changing how a district thinks takes election cycles, not weeks. I give grassroots candidates years, and I count early losses as learning.',
+    'Friendship and fluency take years. I keep showing up, even when native speakers still tease me.',
+    'Gardens take seasons and habits take months. I keep planting, even though I’m bad at it.' ] },
+  { n: 8, name: 'Balancing feedback loops', def: 'The strength of the feedback relative to the impacts they are trying to correct', how: [
+    'When work spills past 7, I take the time back the next week. When a message stops landing, I go back out and listen.',
+    'When work crowds out the table, the weekly rituals pull me back to it.',
+    'Morning meditation resets me every day, so small drifts never become big ones.' ] },
+  { n: 7, name: 'Reinforcing feedback loops', def: 'The strength of the gain of driving loops', how: [
+    'Every candidate who wins with honest messaging shows the next one it can work. Good stories spread, and the network compounds.',
+    'The more often people gather, the closer we get, and the more they come back. Every dinner invites the next one.',
+    'Being present makes me better company, which fills the table, which makes presence easier to choose.' ] },
+  { n: 6, name: 'Information flows', def: 'The structure of who does and does not have access to information', how: [
+    'I spend time where people actually are: at doors, kitchen tables and community meetings. The message starts with what they say, not what consultants assume.',
+    'Malayalam, Tamil and Hindi open conversations I’d otherwise only hear in translation. My partner and I trade our very different worlds over dinner.',
+    'I choose what shapes me: long books and films instead of doomscrolling, and biographies of women who led.' ] },
+  { n: 5, name: 'Rules', def: 'Incentives, punishments and constraints', how: [
+    'I don’t write messaging that blames the people it’s meant to help, and I say no to work that widens the gap.',
+    'The door is open and no invitation is needed. Evenings and weekends belong to people, not screens.',
+    'Nothing in my closet I don’t love, no athleisure by default, and no phone at the table.' ] },
+  { n: 4, name: 'Self-organization', def: 'The power to add, change or evolve system structure', how: [
+    'I help local organizers build their own messaging, so the skill stays in the community after the campaign leaves.',
+    'Friends bring friends, and the table grows its own way. I let gatherings take whatever shape they want.',
+    'I stop controlling every detail and let my life rearrange itself when it needs to.' ] },
+  { n: 3, name: 'Goals', def: 'The purpose or function of the system', how: [
+    'Close the income and wealth gap, standing with the unhoused, ethnic minorities and the LGBTQIA+ community, who feel it first.',
+    'Make my home a place to land for friends, neighbors, my partner, and someday a child.',
+    'Show up warm, confident and accomplished: someone people feel safe bringing their worries to.' ] },
+  { n: 2, name: 'Paradigms', def: 'The mindset out of which the system arises', how: [
+    'Politics isn’t persuasion from above; it means meeting people where they are. Inequality is a choice we keep making, so we can choose differently.',
+    'Hospitality is a practice, not a performance. A cup of chai counts as much as a five-course dinner.',
+    'My worth doesn’t come from getting everything right. Chaos isn’t a failure of planning; it’s what a full life looks like.' ] },
+  { n: 1, name: 'Transcending paradigms', def: 'Holding any mindset loosely enough to change it', how: [
+    'The people I serve know their lives better than I do. The right answer may not be the one I walked in with.',
+    'My family and community may look different from what I pictured, and that’s a gift, not a failure.',
+    'No version of me is the final one, and I hold even this picture of 2031 loosely.' ] },
+];
+
+// ---- geometry: lever 1 at the center, lever 12 on the outer ring; three petals around a numbered spine at the top
+const CHOC = '#4e3226', CREAM = '#fffaf2';
+const COLORS = { // light (outer) → set color → deep (center)
+  purpose:   ['#f2dfcc', '#b9784a', '#6e3a1f'],
+  belonging: ['#f4ddd3', '#b8705f', '#6f342a'],
+  presence:  ['#e2e7ea', '#6f7f8c', '#34414c'],
+};
+const R0 = 22, RING = 23.2;                    // lever n spans R0+(n-1)*RING .. R0+n*RING
+const inner = n => R0 + (n - 1) * RING, outer = n => R0 + n * RING;
+const WEDGE = [[-80, 32], [34, 146], [148, 260]]; // degrees, 0 = 3 o'clock, clockwise
+const pt = (r, a) => { const t = a * Math.PI / 180; return [+(r * Math.cos(t)).toFixed(2), +(r * Math.sin(t)).toFixed(2)]; };
+function sector(r0, r1, a0, a1) {
+  const big = a1 - a0 > 180 ? 1 : 0, [x1, y1] = pt(r1, a0), [x2, y2] = pt(r1, a1), [x3, y3] = pt(r0, a1), [x4, y4] = pt(r0, a0);
+  return `M${x1} ${y1}A${r1} ${r1} 0 ${big} 1 ${x2} ${y2}L${x3} ${y3}A${r0} ${r0} 0 ${big} 0 ${x4} ${y4}Z`;
+}
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => '#' + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+function shade(set, n) {
+  const t = (12 - n) / 11, [lo, mid, deep] = COLORS[set];
+  return t < .6 ? mix(lo, mid, .15 + t / .6 * .85) : mix(mid, deep, (t - .6) / .4);
+}
+
+// ---- draw
+const svg = document.getElementById('kolam');
+let out = '';
+
+// lotus border: two layers of pointed petals with a pulli (dot) in each
+const RB = outer(12) + 8, N = 36, STEP = 360 / N;
+const petal = (a, len, half) => {
+  const [x0, y0] = pt(RB, a - half), [x1, y1] = pt(RB, a + half), [tx, ty] = pt(RB + len, a),
+        [c0x, c0y] = pt(RB + len * .55, a - half * 1.15), [c1x, c1y] = pt(RB + len * .55, a + half * 1.15);
+  return `M${x0} ${y0}Q${c0x} ${c0y} ${tx} ${ty}Q${c1x} ${c1y} ${x1} ${y1}Z`;
+};
+for (let k = 0; k < N; k++) {
+  const a = k * STEP - 90 + STEP / 2;
+  out += `<path d="${petal(a, 46, STEP * .62)}" fill="#f1e2cf" stroke="${CHOC}" stroke-width="1.2"/>`;
+}
+for (let k = 0; k < N; k++) {
+  const a = k * STEP - 90, [vx, vy] = pt(RB + 4, a), [wx, wy] = pt(RB + 20, a), [dx, dy] = pt(RB + 14, a);
+  out += `<path d="${petal(a, 32, STEP * .55)}" fill="${CREAM}" stroke="${CHOC}" stroke-width="1.6"/>
+    <line x1="${vx}" y1="${vy}" x2="${wx}" y2="${wy}" stroke="${CHOC}" stroke-width="1" opacity=".35"/>
+    <circle cx="${dx}" cy="${dy}" r="2.6" fill="${CHOC}"/>`;
+}
+out += `<circle r="${RB}" fill="${CREAM}" stroke="${CHOC}" stroke-width="1.6"/>`;
+for (let a = 0; a < 360; a += 4) { const [x, y] = pt(RB - 3.5, a); out += `<circle cx="${x}" cy="${y}" r="1.3" fill="${CHOC}" opacity=".55"/>`; }
+
+// curved petal names outside the border
+SETS.forEach((s, i) => {
+  const [a0, a1] = WEDGE[i], mid = (a0 + a1) / 2, flip = mid > 10 && mid < 170, r = RB + 62;
+  const [x0, y0] = pt(r, flip ? a1 : a0), [x1, y1] = pt(r, flip ? a0 : a1);
+  out += `<path id="lab-${s.id}" d="M${x0} ${y0}A${r} ${r} 0 0 ${flip ? 0 : 1} ${x1} ${y1}" fill="none"/>
+    <text class="arcLabel" fill="${COLORS[s.id][1]}" dy="${flip ? 14 : 0}"><textPath href="#lab-${s.id}" startOffset="50%" text-anchor="middle">${s.tag}</textPath></text>`;
+});
+
+// each ring gets its own repeating motif, drawn in a tone of the cell it sits on
+const MOTIFS = ['petals', 'dots', 'scallops', 'diamonds', 'zigzag', 'loops'];
+const lum = h => { const [r, g, b] = hex(h); return (.299 * r + .587 * g + .114 * b) / 255; };
+function motif(n, a0, a1, fill) {
+  const ri = inner(n) + 1.5, ro = outer(n) - 1.5, rm = (ri + ro) / 2, kind = MOTIFS[(12 - n) % 6];
+  const col = lum(fill) < .5 ? CREAM : mix(fill, '#2a1a12', .38), op = lum(fill) < .5 ? .8 : .85;
+  const gap = { petals: 11, dots: 12, scallops: 16, diamonds: 14, zigzag: 12, loops: 9 }[kind];
+  const deg = px => px / rm * 180 / Math.PI;
+  const k = Math.max(3, Math.round((a1 - a0) / deg(gap))), step = (a1 - a0) / k, at = j => a0 + step * (j + .5);
+  const line = `fill="none" stroke="${col}" stroke-width="1.3" stroke-linejoin="round"`;
+  let g = '';
+  if (kind === 'petals') for (let j = 0; j < k; j++) { const a = at(j), [x, y] = pt(rm, a);
+    g += `<ellipse cx="${x}" cy="${y}" rx="2.6" ry="${RING / 2 - 4.5}" transform="rotate(${(a - 90).toFixed(1)} ${x} ${y})" fill="${col}"/>`; }
+  if (kind === 'dots') for (let j = 0; j < k; j++) { const a = at(j), [x, y] = pt(rm, a), [u, v] = pt(rm, a + step / 2);
+    g += `<circle cx="${x}" cy="${y}" r="2.6" fill="${col}"/>` + (j < k - 1 ? `<circle cx="${u}" cy="${v}" r="1.1" fill="${col}"/>` : ''); }
+  if (kind === 'scallops') { const r = ri + 2, [sx, sy] = pt(r, a0 + step * .1); let d = `M${sx} ${sy}`;
+    for (let j = 0; j < k; j++) { const [x, y] = pt(r, a0 + step * (j + 1) - (j === k - 1 ? step * .1 : 0)); d += `A${gap / 2} ${gap / 2} 0 0 1 ${x} ${y}`;
+      const [u, v] = pt(ri + 5, at(j)); g += `<circle cx="${u}" cy="${v}" r="1.5" fill="${col}"/>`; }
+    g += `<path d="${d}" ${line}/>`; }
+  if (kind === 'diamonds') for (let j = 0; j < k; j++) { const a = at(j), h = RING / 2 - 4.5, w = deg(4.2),
+    p = [pt(rm + h, a), pt(rm, a + w), pt(rm - h, a), pt(rm, a - w)].map(q => q.join(' ')).join('L'), [u, v] = pt(rm, a + step / 2);
+    g += `<path d="M${p}Z" fill="${col}"/>` + (j < k - 1 ? `<circle cx="${u}" cy="${v}" r="1.2" fill="${col}"/>` : ''); }
+  if (kind === 'zigzag') { const pts = [];
+    for (let j = 0; j <= k * 2; j++) pts.push(pt(j % 2 ? ro - 3.5 : ri + 3.5, a0 + step * .15 + (step * (k - .3)) * j / (k * 2)).join(','));
+    g += `<polyline points="${pts.join(' ')}" ${line}/>`; }
+  if (kind === 'loops') for (let j = 0; j < k; j++) { const [x, y] = pt(rm, at(j)); g += `<circle cx="${x}" cy="${y}" r="5.2" ${line}/>`; }
+  return `<g opacity="${op}">${g}</g>`;
+}
+
+// the 36 cells, each with its motif laid over it
+LEVERS.forEach(l => SETS.forEach((s, i) => {
+  const [a0, a1] = WEDGE[i], fill = shade(s.id, l.n), delay = `transform-origin:0 0;animation-delay:${(l.n - 1) * 55 + i * 20}ms`;
+  out += `<path class="cell" tabindex="0" role="button" data-n="${l.n}" data-set="${s.id}" data-i="${i}"
+    aria-label="Lever ${l.n}, ${l.name}, ${s.tag}" fill="${fill}" stroke="${CREAM}" stroke-width="2.4" style="${delay}"
+    d="${sector(inner(l.n), outer(l.n), a0, a1)}"/>
+    <g class="deco" data-set="${s.id}" style="${delay}" pointer-events="none">${motif(l.n, a0, a1, fill)}</g>`;
+}));
+
+// numbered spine at the top, and a flower for the bindu at the center
+out += `<path d="${sector(R0, outer(12), -100, -80)}" fill="${CREAM}"/>`;
+LEVERS.forEach(l => { const [x, y] = pt((inner(l.n) + outer(l.n)) / 2, -90); out += `<text class="rnum" id="rn-${l.n}" x="${x}" y="${y}">${l.n}</text>`; });
+out += `<circle r="${R0 - 3}" fill="${CHOC}"/>`;
+for (let k = 0; k < 8; k++) { const a = k * 45 - 90, [x, y] = pt(10, a);
+  out += `<ellipse cx="${x}" cy="${y}" rx="3" ry="6.5" transform="rotate(${a - 90} ${x} ${y})" fill="${CREAM}" opacity=".9"/>`; }
+out += `<circle r="3.4" fill="#e0a24a"/>`;
+
+// outline for the chosen cell
+out += `<path id="cellMark" d="" fill="none" stroke="${CHOC}" stroke-width="3" stroke-linejoin="round" pointer-events="none"/>`;
+svg.innerHTML = out;
+svg.querySelectorAll('.cell, .deco').forEach(c => c.classList.add('in'));
+
+// ---- the three changes, below
+document.getElementById('sets').innerHTML = SETS.map(s => `
+  <article class="set" data-set="${s.id}">
+    <div class="tag">${s.tag}</div>
+    <h3>${s.name}</h3>
+    <p class="rooms">${s.rooms}</p>
+    <p class="why">${s.why}</p>
+  </article>`).join('');
+
+// ---- reading panel
+const panel = document.getElementById('panel');
+let cur = null; // { n, i }
+function intro() {
+  panel.innerHTML = `<div class="intro">
+    <div class="tag">How to read it</div>
+    <h2>Start at the edge</h2>
+    <p class="lead">The outer rings are habits I can change this week. The center is who I’m becoming.</p>
+    <p>Each of the three petals is a change: <strong style="color:var(--purpose)">Purpose</strong>, <strong style="color:var(--belonging)">Belonging</strong> and <strong style="color:var(--presence)">Presence</strong>. Each ring is one of Meadows’s twelve levers, and the color deepens as the levers get more powerful.</p>
+    <button class="pill" type="button" id="begin">Begin at lever 12 →</button>
+  </div>`;
+  document.getElementById('begin').onclick = () => select(12, onlyIndex() ?? 0, true);
+}
+function onlyIndex() { const o = document.body.dataset.only; return o ? SETS.findIndex(s => s.id === o) : null; }
+
+function select(n, i, focus) {
+  cur = { n, i };
+  const l = LEVERS.find(x => x.n === n), only = document.body.dataset.only;
+  panel.innerHTML = `
+    <div class="tag">Lever ${n} of 12 · ${n >= 10 ? 'shallow' : n >= 5 ? 'middle' : 'deep'}</div>
+    <h2>${l.name}</h2>
+    <p class="def">${l.def}</p>
+    <div class="depth" aria-hidden="true">${LEVERS.map(x => `<i class="${x.n >= n ? 'on' : ''}"></i>`).join('')}</div>
+    <div class="entries">${SETS.map((s, j) => `
+      <button type="button" class="entry ${j === i ? 'on' : ''} ${!only || only === s.id ? 'keep' : ''}" data-set="${s.id}" data-j="${j}">
+        <div class="who">${s.tag}</div><p>${l.how[j]}</p>
+      </button>`).join('')}
+    </div>
+    <div class="steps">
+      <button class="pill" type="button" data-step="1" ${n === 12 ? 'disabled' : ''}>← Shallower</button>
+      <button class="pill" type="button" data-step="-1" ${n === 1 ? 'disabled' : ''}>Deeper →</button>
+    </div>`;
+
+  // marks on the kolam
+  const [a0, a1] = WEDGE[i];
+  document.getElementById('cellMark').setAttribute('d', sector(inner(n), outer(n), a0, a1));
+  svg.querySelectorAll('.rnum').forEach(t => t.classList.toggle('on', +t.id.slice(3) === n));
+  if (focus) svg.querySelector(`.cell[data-n="${n}"][data-i="${i}"]`)?.focus({ preventScroll: true });
+}
+
+panel.addEventListener('click', e => {
+  if (!cur) return;
+  const en = e.target.closest('.entry'), st = e.target.closest('[data-step]');
+  if (en) select(cur.n, +en.dataset.j);
+  if (st && !st.disabled) select(cur.n + +st.dataset.step, cur.i);
+});
+
+svg.addEventListener('click', e => {
+  const c = e.target.closest('.cell'); if (!c) return;
+  select(+c.dataset.n, +c.dataset.i);
+  if (innerWidth <= 900) panel.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+});
+svg.addEventListener('keydown', e => {
+  const c = e.target.closest('.cell'); if (!c) return;
+  let n = +c.dataset.n, i = +c.dataset.i;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); return select(n, i, true); }
+  if (e.key === 'ArrowUp') n = Math.min(12, n + 1);
+  else if (e.key === 'ArrowDown') n = Math.max(1, n - 1);
+  else if (e.key === 'ArrowRight') i = (i + 1) % 3;
+  else if (e.key === 'ArrowLeft') i = (i + 2) % 3;
+  else return;
+  e.preventDefault();
+  select(n, i, true);
+});
+
+// ---- follow one change, or all three
+const chips = document.getElementById('chips');
+chips.innerHTML = `<button class="chip" type="button" data-only="" aria-pressed="true">All three</button>` +
+  SETS.map(s => `<button class="chip" type="button" data-set="${s.id}" data-only="${s.id}" aria-pressed="false"><span class="dot"></span>${s.tag}</button>`).join('');
+chips.addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  if (b.dataset.only) document.body.dataset.only = b.dataset.only; else delete document.body.dataset.only;
+  chips.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b));
+  if (cur) select(cur.n, b.dataset.only ? onlyIndex() : cur.i);
+});
+
+intro();
+</script>
+</body>
+</html>

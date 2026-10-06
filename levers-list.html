@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How I Get There</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f6f0e6; --paper: #fffaf2; --ink: #3b2a20; --soft: #7a6352; --line: #e4d8c7; --choc: #4e3226;
+    --purpose: #b9784a; --purpose-bg: #f2dfcc;
+    --belonging: #b8705f; --belonging-bg: #f4ddd3;
+    --presence: #6f7f8c; --presence-bg: #e2e7ea;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+  /* top bar */
+  .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 0; }
+  .pill { display: inline-block; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 7px 14px; font-size: 14px; text-decoration: none; white-space: nowrap; }
+  .pill:hover { border-color: var(--soft); }
+  .bar .right { display: flex; gap: 8px; flex-wrap: wrap; }
+  .view { display: inline-flex; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 3px; font-size: 14px; }
+  .view a { padding: 4px 12px; border-radius: 999px; text-decoration: none; color: var(--soft); white-space: nowrap; }
+  .view a:hover { color: var(--ink); }
+  .view a[aria-current="page"] { background: var(--choc); color: #fbf4e8; }
+
+  /* hero */
+  header.hero { padding: 40px 0 28px; max-width: 760px; }
+  .eyebrow { margin: 0 0 10px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #8a3b1e; }
+  h1 { margin: 0 0 18px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(36px, 6vw, 60px); line-height: 1.02; color: var(--choc); }
+  .lede { margin: 0; font-size: 18px; color: var(--soft); }
+  .lede em { font-family: "Fraunces", Georgia, serif; color: var(--ink); }
+
+  /* the three changes */
+  .sets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 28px 0 8px; }
+  .set { background: var(--paper); border: 1px solid var(--line); border-top: 5px solid var(--c); border-radius: 14px; padding: 20px 20px 22px; }
+  .set .tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--c); font-weight: 600; }
+  .set h2 { margin: 6px 0 4px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; line-height: 1.15; color: var(--choc); }
+  .set .rooms { margin: 0 0 14px; font-size: 13px; color: var(--soft); }
+  .set h3 { margin: 0 0 4px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); font-weight: 600; }
+  .set p.why { margin: 0; }
+
+  /* how to read it */
+  .how { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 40px 0 0; padding: 18px 0; border-top: 1px solid var(--line); }
+  .how p { margin: 0; max-width: 560px; color: var(--soft); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 14px; }
+  .chip[aria-pressed="true"] { background: var(--choc); border-color: var(--choc); color: #fbf4e8; }
+  .chip .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 7px; vertical-align: 0; }
+
+  /* the climb: a seesaw that tips further as the levers get deeper */
+  .climb { position: sticky; top: 0; z-index: 3; background: rgba(246, 240, 230, .94); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line); }
+  .climb .wrap { display: flex; align-items: center; gap: 14px; height: 64px; }
+  .climb svg { flex: none; width: 92px; height: 48px; overflow: visible; }
+  .climb #beam { transition: transform .5s cubic-bezier(.3, 1.3, .5, 1); transform-origin: 46px 34px; }
+  .climb .now { min-width: 0; }
+  .climb .now strong { display: block; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 18px; color: var(--choc); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .climb .now span { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
+  .climb .meter { margin-left: auto; display: flex; gap: 3px; }
+  .climb .meter i { display: block; width: 10px; height: 22px; border-radius: 3px; background: var(--line); transition: background .3s; }
+  .climb .meter i.on { background: var(--choc); }
+
+  /* each lever */
+  ol.levers { list-style: none; margin: 0; padding: 0; }
+  .lever { padding: 40px 0 36px; border-bottom: 1px solid var(--line); scroll-margin-top: 72px; }
+  .lever-head { display: grid; grid-template-columns: 72px 1fr; gap: 4px 18px; align-items: start; margin-bottom: 20px; }
+  .num { grid-row: span 3; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 56px; line-height: .9; color: var(--choc); text-align: right; }
+  .lever h2 { margin: 0; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--choc); }
+  .lever .def { margin: 0; color: var(--soft); }
+  .reach { height: 6px; border-radius: 3px; background: var(--line); margin-top: 8px; max-width: 520px; }
+  .reach i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #d8a984, var(--choc)); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-left: 90px; }
+  .card { background: var(--bg-c); border-radius: 12px; padding: 16px 18px 18px; }
+  .card .tag { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--c); font-weight: 700; }
+  .card p { margin: 6px 0 0; }
+
+  [data-set="purpose"] { --c: var(--purpose); --bg-c: var(--purpose-bg); }
+  [data-set="belonging"] { --c: var(--belonging); --bg-c: var(--belonging-bg); }
+  [data-set="presence"] { --c: var(--presence); --bg-c: var(--presence-bg); }
+
+  /* showing one change at a time */
+  body[data-only] .cards { grid-template-columns: 1fr; max-width: 680px; }
+  body[data-only="purpose"] .card:not([data-set="purpose"]),
+  body[data-only="belonging"] .card:not([data-set="belonging"]),
+  body[data-only="presence"] .card:not([data-set="presence"]) { display: none; }
+  body[data-only] .card p { font-size: 18px; }
+
+  /* close */
+  footer.end { padding: 56px 0 72px; text-align: center; }
+  footer.end .note { display: inline-block; max-width: 460px; padding: 34px 26px 26px; background: #ffe58a; transform: rotate(-1.5deg);
+    font-family: "Kalam", cursive; font-size: 23px; line-height: 1.3; color: #3a2a1c; box-shadow: 0 12px 24px -10px rgba(0,0,0,.35); position: relative; }
+  footer.end .note::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; margin-left: -45px; background: rgba(255,255,255,.6); transform: rotate(-3deg); }
+  footer.end .actions { margin-top: 36px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .cite { margin-top: 28px; font-size: 13px; color: var(--soft); }
+
+  @media (max-width: 860px) {
+    .sets { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr; margin-left: 0; }
+    .lever-head { grid-template-columns: 52px 1fr; gap: 2px 12px; }
+    .num { font-size: 42px; }
+    .climb .meter { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .climb #beam { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="bar">
+    <a class="pill" href="dream-home.html">← Back to the house</a>
+    <div class="right">
+      <div class="view" role="group" aria-label="View"><a href="levers.html">View as mandala</a><a aria-current="page" href="levers-list.html">Read as a list</a></div>
+      <a class="pill" href="index.html">Street</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">After the walk-through</p>
+    <h1>How I get there</h1>
+    <p class="lede">The house shows who I am in 2031. This page shows how I get there. Donella Meadows named twelve places to intervene in a system, from the easiest to change (<em>numbers</em>) to the most powerful (<em>paradigms</em>). Here are three changes I want to make, and how each one moves through all twelve.</p>
+  </header>
+
+  <section class="sets" id="sets" aria-label="The three changes"></section>
+
+  <div class="how">
+    <p>Read down the page to climb from the shallowest lever to the deepest. Or follow one change at a time.</p>
+    <div class="chips" id="chips" role="group" aria-label="Show which changes"></div>
+  </div>
+</div>
+
+<div class="climb" aria-hidden="true">
+  <div class="wrap">
+    <svg viewBox="0 0 92 48">
+      <path d="M38 46 L46 34 L54 46 Z" fill="#4e3226"/>
+      <g id="beam">
+        <line x1="2" y1="34" x2="90" y2="34" stroke="#4e3226" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="14" cy="23" r="10" fill="#4e3226"/>
+      </g>
+    </svg>
+    <div class="now"><span id="nowNum">Lever 12 of 12</span><strong id="nowName">Numbers</strong></div>
+    <div class="meter" id="meter"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <ol class="levers" id="levers"></ol>
+</main>
+
+<div class="wrap">
+  <footer class="end">
+    <div class="note">The shallow levers are where I start. The deep ones are why it lasts.</div>
+    <div class="actions">
+      <a class="pill" href="dream-home.html">← Back to the house</a>
+      <a class="pill" href="levers.html">View as mandala</a>
+      <a class="pill" href="#sets">Back to the top</a>
+    </div>
+    <p class="cite">Levers from Donella Meadows, “Leverage Points: Places to Intervene in a System” (1999).</p>
+  </footer>
+</div>
+
+<script>
+const SETS = [
+  { id: 'purpose', tag: 'Purpose', name: 'Work that closes the gap', rooms: 'The study · the front door',
+    why: 'Income and wealth inequality decides who gets a home, good health and a voice, and too much political messaging talks past the people it’s meant to serve. I want my career aimed at that gap, and I want it to last, which means work I can keep doing for decades.' },
+  { id: 'belonging', tag: 'Belonging', name: 'A table that’s always open', rooms: 'The kitchen · the Nalukettu · the bedroom',
+    why: 'Community, culture and family make the work worth doing, and they carry me when it’s hard. Right now they get the leftovers of my time. In 2031 they get the best of it.' },
+  { id: 'presence', tag: 'Presence', name: 'Warm, confident, imperfect', rooms: 'The open space · the garden · the closet · the library',
+    why: 'Perfectionism and a phone in my hand keep me half-present. To be a lantern for other people, I have to be steady myself: rested, grounded and comfortable in my own skin.' },
+];
+
+// from the shallowest lever (12) to the deepest (1); each change in the same order as SETS
+const LEVERS = [
+  { n: 12, name: 'Numbers', def: 'Constants and parameters such as subsidies, taxes and standards', how: [
+    'My work ends at 7pm, my weekends are mine, and I use every vacation day. I judge campaigns by turnout and wins, not by hours logged.',
+    'Chai every day, crafting with Arthi every week, Malayali food every week, and a five-course dinner a few times a year.',
+    'Meditation every morning, a book in the garden on some afternoons, and screen time cut to what I actually need.' ] },
+  { n: 11, name: 'Buffers', def: 'The sizes of stabilizing stocks relative to their flows', how: [
+    'Savings and a network deep enough that I can turn down a campaign that doesn’t fit, and take the one that matters even when it pays less.',
+    'A stocked pantry, extra chairs and a pot of chai on the stove, so people can drop in without a plan.',
+    'Unscheduled mornings. Time is my buffer: room to absorb a hard day without falling apart.' ] },
+  { n: 10, name: 'Stock-and-flow structures', def: 'Physical systems and their nodes of intersection', how: [
+    'The study is upstairs, behind a door that closes. Work lives in one room, and my phone stays on that desk.',
+    'The house is built for gathering: a courtyard at its center, a table that seats eight, and the phone left by the front door.',
+    'The house does the work for me: the phone on the entry table, books within reach, and the garden just outside the kitchen.' ] },
+  { n: 9, name: 'Delays', def: 'The lengths of time relative to the rates of system changes', how: [
+    'Changing how a district thinks takes election cycles, not weeks. I give grassroots candidates years, and I count early losses as learning.',
+    'Friendship and fluency take years. I keep showing up, even when native speakers still tease me.',
+    'Gardens take seasons and habits take months. I keep planting, even though I’m bad at it.' ] },
+  { n: 8, name: 'Balancing feedback loops', def: 'The strength of the feedback relative to the impacts they are trying to correct', how: [
+    'When work spills past 7, I take the time back the next week. When a message stops landing, I go back out and listen.',
+    'When work crowds out the table, the weekly rituals pull me back to it.',
+    'Morning meditation resets me every day, so small drifts never become big ones.' ] },
+  { n: 7, name: 'Reinforcing feedback loops', def: 'The strength of the gain of driving loops', how: [
+    'Every candidate who wins with honest messaging shows the next one it can work. Good stories spread, and the network compounds.',
+    'The more often people gather, the closer we get, and the more they come back. Every dinner invites the next one.',
+    'Being present makes me better company, which fills the table, which makes presence easier to choose.' ] },
+  { n: 6, name: 'Information flows', def: 'The structure of who does and does not have access to information', how: [
+    'I spend time where people actually are: at doors, kitchen tables and community meetings. The message starts with what they say, not what consultants assume.',
+    'Malayalam, Tamil and Hindi open conversations I’d otherwise only hear in translation. My partner and I trade our very different worlds over dinner.',
+    'I choose what shapes me: long books and films instead of doomscrolling, and biographies of women who led.' ] },
+  { n: 5, name: 'Rules', def: 'Incentives, punishments and constraints', how: [
+    'I don’t write messaging that blames the people it’s meant to help, and I say no to work that widens the gap.',
+    'The door is open and no invitation is needed. Evenings and weekends belong to people, not screens.',
+    'Nothing in my closet I don’t love, no athleisure by default, and no phone at the table.' ] },
+  { n: 4, name: 'Self-organization', def: 'The power to add, change or evolve system structure', how: [
+    'I help local organizers build their own messaging, so the skill stays in the community after the campaign leaves.',
+    'Friends bring friends, and the table grows its own way. I let gatherings take whatever shape they want.',
+    'I stop controlling every detail and let my life rearrange itself when it needs to.' ] },
+  { n: 3, name: 'Goals', def: 'The purpose or function of the system', how: [
+    'Close the income and wealth gap, standing with the unhoused, ethnic minorities and the LGBTQIA+ community, who feel it first.',
+    'Make my home a place to land for friends, neighbors, my partner, and someday a child.',
+    'Show up warm, confident and accomplished: someone people feel safe bringing their worries to.' ] },
+  { n: 2, name: 'Paradigms', def: 'The mindset out of which the system arises', how: [
+    'Politics isn’t persuasion from above; it means meeting people where they are. Inequality is a choice we keep making, so we can choose differently.',
+    'Hospitality is a practice, not a performance. A cup of chai counts as much as a five-course dinner.',
+    'My worth doesn’t come from getting everything right. Chaos isn’t a failure of planning; it’s what a full life looks like.' ] },
+  { n: 1, name: 'Transcending paradigms', def: 'Holding any mindset loosely enough to change it', how: [
+    'The people I serve know their lives better than I do. The right answer may not be the one I walked in with.',
+    'My family and community may look different from what I pictured, and that’s a gift, not a failure.',
+    'No version of me is the final one, and I hold even this picture of 2031 loosely.' ] },
+];
+
+document.getElementById('sets').innerHTML = SETS.map(s => `
+  <article class="set" data-set="${s.id}">
+    <div class="tag">${s.tag}</div>
+    <h2>${s.name}</h2>
+    <p class="rooms">${s.rooms}</p>
+    <h3>Why it’s necessary</h3>
+    <p class="why">${s.why}</p>
+  </article>`).join('');
+
+document.getElementById('levers').innerHTML = LEVERS.map(l => `
+  <li class="lever" id="lever-${l.n}" data-n="${l.n}">
+    <div class="lever-head">
+      <div class="num">${l.n}</div>
+      <h2>${l.name}</h2>
+      <p class="def">${l.def}</p>
+      <div class="reach" aria-hidden="true"><i style="width:${Math.round((13 - l.n) / 12 * 100)}%"></i></div>
+    </div>
+    <div class="cards">${SETS.map((s, i) => `
+      <div class="card" data-set="${s.id}"><div class="tag">${s.tag}</div><p>${l.how[i]}</p></div>`).join('')}
+    </div>
+  </li>`).join('');
+
+// follow one change, or all three
+const chips = document.getElementById('chips');
+chips.innerHTML = `<button class="chip" type="button" data-only="" aria-pressed="true">All three</button>` +
+  SETS.map(s => `<button class="chip" type="button" data-set="${s.id}" data-only="${s.id}" aria-pressed="false"><span class="dot"></span>${s.tag}</button>`).join('');
+chips.addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  if (b.dataset.only) document.body.dataset.only = b.dataset.only; else delete document.body.dataset.only;
+  chips.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b));
+});
+
+// the seesaw tips further, and the meter fills, as you scroll to deeper levers
+const meter = document.getElementById('meter');
+meter.innerHTML = LEVERS.map(() => '<i></i>').join('');
+const beam = document.getElementById('beam');
+function show(n) {
+  const l = LEVERS.find(x => x.n === n);
+  document.getElementById('nowNum').textContent = `Lever ${n} of 12`;
+  document.getElementById('nowName').textContent = l.name;
+  beam.style.transform = `rotate(${-3 - (12 - n) * 1.6}deg)`;
+  meter.querySelectorAll('i').forEach((m, i) => m.classList.toggle('on', i <= 12 - n));
+}
+// the current lever is the deepest one whose top has passed 45% of the screen; at the very bottom it's lever 1
+const rows = [...document.querySelectorAll('.lever')];
+let ticking = false;
+function track() {
+  ticking = false;
+  const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 40;
+  const past = rows.filter(r => r.getBoundingClientRect().top < innerHeight * .45);
+  show(atEnd ? 1 : past.length ? +past[past.length - 1].dataset.n : 12);
+}
+addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(track); } }, { passive: true });
+addEventListener('resize', track);
+track();
+</script>
+</body>
+</html>

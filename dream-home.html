@@ -70,6 +70,8 @@
   }
   .note::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; margin-left: -45px;
     background: rgba(255, 255, 255, .55); box-shadow: 0 1px 2px rgba(0,0,0,.08); transform: rotate(-3deg); }
+  .note.long { width: 290px; font-size: 19px; }
+  .note em { font-style: normal; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
   .note .close { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; cursor: pointer; font-size: 22px; line-height: 1; opacity: .45; padding: 4px; }
   @keyframes stick { from { opacity: 0; transform: rotate(var(--r)) translateY(-18px) scale(.85); } to { opacity: 1; transform: rotate(var(--r)); } }
 
@@ -87,6 +89,20 @@
   #introStatus { margin: 0; font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 19px; color: #4a3a2e; }
   #introStatus.loading::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.4s steps(4) infinite; }
   @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+  .found a { color: #ffe58a; text-decoration: none; }
+  .found a:hover { text-decoration: underline; }
+  #menu button.reset { margin-top: 6px; border-top: 1px solid rgba(255,255,255,.15); border-radius: 0 0 8px 8px; font-size: 13px; opacity: .6; }
+  #menu button.reset:hover { opacity: 1; }
+  #menu a.levers { display: block; margin-top: 6px; padding: 10px; border-top: 1px solid rgba(255,255,255,.15); color: #ffe58a; text-decoration: none; font-size: 15px; }
+  #finale { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(26, 20, 17, .55); }
+  #finale[hidden] { display: none; }
+  #finale .card { position: relative; width: min(420px, 100%); padding: 40px 28px 28px; background: #ffe58a; color: #3a2a1c; transform: rotate(-1.5deg);
+    box-shadow: 0 1px 1px rgba(0,0,0,.08), 0 18px 40px -12px rgba(0,0,0,.6); animation: stick .35s cubic-bezier(.2,1.4,.4,1); }
+  #finale .card::before { content: ""; position: absolute; top: -12px; left: 50%; width: 90px; height: 26px; margin-left: -45px; background: rgba(255,255,255,.55); transform: rotate(-3deg); }
+  #finale h2 { margin: 0 0 10px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 28px; line-height: 1.1; }
+  #finale p { margin: 0 0 22px; font-family: "Kalam", cursive; font-size: 21px; line-height: 1.3; }
+  #finale .go { display: inline-block; background: #3a2a1c; color: #fbf4e8; border-radius: 999px; padding: 10px 18px; text-decoration: none; font-size: 15px; }
+  #finale .stay { margin-left: 8px; background: transparent; border: 0; padding: 10px 8px; cursor: pointer; font-size: 15px; text-decoration: underline; color: #3a2a1c; }
   @media (max-width: 700px) {
     .found { display: none; }
     .note { left: 16px !important; right: 16px !important; top: auto !important; bottom: 20px !important; width: auto; margin: 0 auto; max-width: 360px; }
@@ -277,6 +293,13 @@
   <div class="found" id="foundCount"></div>
 </header>
 <nav id="menu" hidden></nav>
+<div id="finale" hidden role="dialog" aria-labelledby="finaleTitle">
+  <div class="card">
+    <h2 id="finaleTitle">You found every note</h2>
+    <p>That’s who I am in 2031. Next: how I get there, and why it matters.</p>
+    <a class="go" href="levers.html">See how it happens →</a><button class="stay" type="button" id="finaleStay">Keep exploring</button>
+  </div>
+</div>
 <div class="hint" id="hint">Drag to look around · tap glowing spots · click a door to walk through</div>
 <div id="fade"></div>
 
@@ -817,6 +840,17 @@ function buildNalukettu() {
   box(MAT.black, tx - .1, .48, tz, .08, .012, .16);
   lathe(MAT.white, [[0, 0], [.04, 0], [.045, .09], [.04, .09], [0, .09]], tx + .3, .43, tz - .1, 20);
 
+  // a lantern by the front door
+  {
+    const lx = X(612), lz = AT.z1 - .22;
+    cyl(MAT.brass, lx, 2.2, lz, .006, .8, .006, 6);
+    lathe(MAT.brass, [[0, 0], [.09, 0], [.1, .03], [.03, .03]], lx, 1.86, lz, 6);
+    lathe(M({ color: 0xfff1c9, transparent: true, opacity: .45, roughness: .1 }), [[.08, 0], [.08, .22]], lx, 1.89, lz, 6);
+    lathe(MAT.brass, [[.1, 0], [.06, .07], [.015, .1], [0, .12]], lx, 2.1, lz, 6);
+    cyl(glow(0xffb347, 4), lx, 1.98, lz, .025, .07, .005, 8);
+    flames.push(pointLight(0xffb347, 1.4, lx, 1.98, lz, 4));
+  }
+
   // nilavilakku, the brass lamp, lit in the courtyard
   const lx = CY.x0 + .55, lz = CY.z1 - .5;
   lathe(MAT.brass, [[0, 0], [.17, 0], [.17, .02], [.13, .06], [.07, .1], [.04, .14], [.03, .5], [.05, .53], [.03, .56], [.028, .82], [.045, .85], [.025, .88], [.18, .92], [.2, .95], [.17, .96], [.03, .97], [.02, 1.02], [.045, 1.06], [.03, 1.1], [0, 1.16]], lx, COURT, lz, 40);
@@ -940,6 +974,13 @@ function buildKitchen() {
   for (const x of [X(760), X(810), X(870), X(925)]) { chair(x, Z(318) - .35, 0); chair(x, Z(380) + .35, Math.PI); }
   lathe(M({ color: 0xe8e2d6, roughness: .3 }), [[0, 0], [.06, 0], [.08, .1], [.04, .22], [.05, .26], [0, .26]], X(843), .78, Z(349), 20);
   [[0xe05a2e, 0, 0], [0xf2a7c3, .07, .03], [0xffd27a, -.06, .04], [0xf2a7c3, .02, -.07]].forEach(([c, dx, dz]) => sphere(fabric(c), X(843) + dx, 1.12, Z(349) + dz, .06, 1, 1, 1, 10));
+  // chai for whoever stops by: a steel pot and glasses at the end of the table
+  lathe(MAT.steel, [[0, 0], [.07, 0], [.08, .05], [.075, .12], [.08, .13], [0, .13]], X(760), .78, Z(349), 24);
+  cyl(MAT.black, X(760) + .09, .86, Z(349), .012, .06, .012, 8);
+  [[.18, -.12], [.22, .1], [.32, -.02]].forEach(([dx, dz]) => {
+    lathe(M({ color: 0xffffff, transparent: true, opacity: .3, roughness: .05 }), [[0, 0], [.025, 0], [.03, .08], [.028, .08]], X(760) + dx, .78, Z(349) + dz, 16);
+    cyl(fabric(0xc8955c), X(760) + dx, .82, Z(349) + dz, .026, .023, .06, 16);
+  });
   // pendants: domes over the counter, a linear light over the table
   for (const x of [X(470), X(610)]) {
     cyl(MAT.black, x, 2.1, Z(371), .006, 1.1, .006, 6);
@@ -1091,11 +1132,11 @@ function buildCloset() {
   const rail = new THREE.Mesh(new THREE.CylinderGeometry(.015, .015, r.z1 - r.z0 - .4, 12), MAT.brass);
   rail.rotation.x = Math.PI / 2; rail.position.set(r.x0 + .45, y + 1.9, (r.z0 + r.z1) / 2); add(rail);
   boxAt(MAT.white, r.x0 + .15, r.x0 + .75, y + 2.05, y + 2.09, r.z0 + .2, r.z1 - .2);
-  const clothes = [0xf2efe6, 0x3d5a80, 0xc24b3a, 0xe3a83b, 0x2f2f3a, 0x2f6f6a, 0xf2a7c3, 0xa85a3a, 0x5a4a7a, 0xf2efe6, 0x8e3b2e];
+  const clothes = [0xe9dfcc, 0xd8a984, 0x4e3226, 0xdbbfab, 0xcfd4d9, 0xe7c4b2, 0x6b4430, 0xd8a984, 0xe9dfcc, 0xdbbfab, 0x4e3226];
   clothes.forEach((c, i) => {
     const z = r.z0 + .35 + i * .27, long = i % 3 === 2;
     rbox(fabric(c), r.x0 + .45, y + (long ? 1.25 : 1.5), z, .5, long ? 1.2 : .75, .07, .03);
-    if (i % 4 === 3) box(fabric(0xb5532f), r.x0 + .45, y + .75, z, .5, .12, .075);
+    if (i % 4 === 3) box(fabric(0x4e3226), r.x0 + .45, y + .75, z, .5, .12, .075);
   });
   // folded stacks on the shelf above
   for (let i = 0; i < 6; i++) for (let k = 0; k < 3; k++) box(fabric(clothes[(i + 2) % clothes.length]), r.x0 + .45, y + 2.12 + k * .06, r.z0 + .4 + i * .5, .4, .055, .32);
@@ -1408,30 +1449,33 @@ for (const [key, g] of Object.entries(GAPS)) {
   doorTargets.push(hit);
 }
 
-// notes, in the same order as classic.html so progress is shared
+// notes; found ones are remembered by room and index (v2: the 2031 rewrite)
 const NOTES = {
   atrium: [
-    { at: new THREE.Vector3(AT.x0 + 1.2, .9, AT.z0 + .3), c: '#ffe58a', r: -3, text: 'Find more community and build weekly rituals with others' },
-    { at: new THREE.Vector3(X(800) + .6, 1.25, AT.z0 + .1), c: '#bfe3ff', r: 2, text: 'Learn more new languages' },
-    { at: new THREE.Vector3(CY.x0 + .55, COURT + 1.3, CY.z1 - .5), c: '#ffd3a1', r: -1, text: 'Bring your cultural practices and traditions into your personal life' },
-    { at: new THREE.Vector3(X(785) - .1, .62, AT.z1 - .45), c: '#c8f0b5', r: 3, text: 'Depend less on your phone' },
+    { at: new THREE.Vector3(X(684), 1.55, AT.z1 - .12), c: '#ffd3a1', r: -2, text: 'A lantern hangs by my door: a light to find your way by, and somewhere warm to stop. People know they can bring me what’s weighing on them. I’ll listen, and I’ll help however I can.' },
+    { at: new THREE.Vector3(AT.x0 + 1.2, .9, AT.z0 + .3), c: '#ffe58a', r: -3, text: 'Every week Arthi comes over and we embroider and knit together. Sometimes our partners sit with us, and sometimes they’re across the courtyard doing their own thing.' },
+    { at: new THREE.Vector3(X(800) + .6, 1.25, AT.z0 + .1), c: '#bfe3ff', r: 2, text: 'I cook Malayali food every week and go to Malayali cultural events. I speak Malayalam, Tamil and Hindi, badly enough that native speakers tease me, and I keep talking anyway.' },
+    { at: new THREE.Vector3(X(785) - .1, .62, AT.z1 - .45), c: '#c8f0b5', r: 3, text: 'My phone lives on this table. I grab it when I head out or when someone calls. Upstairs, it waits on my study desk.' },
   ],
   library: [
-    { at: new THREE.Vector3(ROOMS.library.box.x0 + 1.9, .95, ROOMS.library.box.z0 + 1.1), c: '#ffe58a', r: -2, text: 'Keep reading, but read more nonfiction' },
-    { at: new THREE.Vector3(X(290), 1.9, ROOMS.library.box.z1 - .3), c: '#ffc2d1', r: 2, text: 'Commit to more long form media in my life' },
+    { at: new THREE.Vector3(ROOMS.library.box.x0 + 1.9, .95, ROOMS.library.box.z0 + 1.1), c: '#ffe58a', r: -2, text: 'On my shelf:<br><em>This Little Light of Mine</em>, on Fannie Lou Hamer<br><em>The Woman Behind the New Deal</em>, on Frances Perkins<br><em>Salt: A World History</em><br><em>The Tyranny of Merit</em>' },
+    { at: new THREE.Vector3(X(290), 1.9, ROOMS.library.box.z1 - .3), c: '#ffc2d1', r: 2, text: 'Books and movies, not doomscrolling. Some nights it’s my best friends, a wine and cheese board, and a film.' },
   ],
-  kitchen: [{ at: new THREE.Vector3(X(600), 1.12, (Z(356) + Z(386)) / 2), c: '#ffd3a1', r: -2, text: 'Cook more “fancy” food' }],
+  kitchen: [
+    { at: new THREE.Vector3(X(790), 1.0, Z(349)), c: '#ffe58a', r: 2, text: 'There’s always chai on the stove. Friends and neighbors stop by for a cup, a snack or dinner, and they never need an invitation.' },
+    { at: new THREE.Vector3(X(600), 1.12, (Z(356) + Z(386)) / 2), c: '#ffd3a1', r: -2, text: 'A few times a year I cook a five-course dinner around one cuisine: Cantonese, Pakistani, Spanish, or something I’ve never made before.' },
+  ],
   garden: [
-    { at: new THREE.Vector3(SEED.x, SEED.y + .3, SEED.z), c: '#c8f0b5', r: 2, text: 'Be more of a gardener' },
-    { at: new THREE.Vector3(X(1215), .95, Z(620)), c: '#ffc2d1', r: -3, text: 'Be more accepting of chaos in my life, and less dependent on order' },
+    { at: new THREE.Vector3(SEED.x, SEED.y + .3, SEED.z), c: '#c8f0b5', r: 2, text: 'Flowers everywhere, even though I’m bad at growing them. Basil, cilantro and spring onions, plus tomatoes and potatoes.' },
+    { at: new THREE.Vector3(X(1215), .95, Z(620)), c: '#ffc2d1', r: -3, text: 'I’ve stopped chasing perfect. Family and life get messy, and I let them.' },
   ],
-  open: [{ at: new THREE.Vector3(X(642), UPPER + .45, ROOMS.open.box.z0 + 1.2), c: '#bfe3ff', r: -2, text: 'Meditate more often' }],
+  open: [{ at: new THREE.Vector3(X(642), UPPER + .45, ROOMS.open.box.z0 + 1.2), c: '#bfe3ff', r: -2, text: 'I meditate first thing every morning. Some days I take a book out to the garden just to sit still.' }],
   study: [
-    { at: new THREE.Vector3(ROOMS.study.box.x0 + .2, UPPER + 1.6, Z(290)), c: '#ffe58a', r: -3, text: 'Find an issue you’re more passionate about that fits your workload' },
-    { at: new THREE.Vector3(ROOMS.study.box.x1 - .2, UPPER + 2.1, Z(370)), c: '#c8f0b5', r: 2, text: 'Work less, but still love your work' },
+    { at: new THREE.Vector3(ROOMS.study.box.x0 + .2, UPPER + 1.6, Z(290)), c: '#ffe58a', r: -3, text: 'I help grassroots candidates find language that meets people where they are, and I bring that work to national campaigns. Everything I write comes back to one thing: closing the gap in income and wealth.' },
+    { at: new THREE.Vector3(ROOMS.study.box.x1 - .2, UPPER + 2.1, Z(370)), c: '#c8f0b5', r: 2, text: 'My work lets me dream and gives me the power to act. It also ends at 7pm, stays out of my weekends, and respects my time off. I just got back from my first trip to South America.' },
   ],
-  master: [{ at: new THREE.Vector3(ROOMS.master.box.x1 - .25, UPPER + 2.05, Z(570)), c: '#ffc2d1', r: -2, text: 'Be married, or maybe adopt a kid' }],
-  closet: [{ at: new THREE.Vector3((ROOMS.closet.box.x0 + ROOMS.closet.box.x1) / 2, UPPER + 1.4, ROOMS.closet.box.z1 - .25), c: '#ffc2d1', r: 2, text: 'Dress differently and be more confident in your physical presence' }],
+  master: [{ at: new THREE.Vector3(ROOMS.master.box.x1 - .25, UPPER + 2.05, Z(570)), c: '#ffc2d1', r: -2, text: 'I share my life with my love, and hopefully soon a baby. We read and cook together. His work is nothing like mine, so dinner is where we trade worlds.' }],
+  closet: [{ at: new THREE.Vector3((ROOMS.closet.box.x0 + ROOMS.closet.box.x1) / 2, UPPER + 1.4, ROOMS.closet.box.z1 - .25), c: '#ffc2d1', r: 2, text: 'Slacks and blouses in camel, sand, blush, soft gray and cream, with chocolate brown as my neutral. No athleisure and nothing I don’t love. When I get dressed, I feel like myself.' }],
 };
 const TOTAL = Object.values(NOTES).reduce((n, a) => n + a.length, 0);
 
@@ -1448,8 +1492,11 @@ buildNalukettu(); buildKitchen(); buildLibrary(); buildOpen(); buildStudy(); bui
    ============================================================ */
 let room = 'atrium', yaw = 0, pitch = 0, walking = null;
 let found = new Set();
-try { found = new Set(JSON.parse(localStorage.getItem('dreamhome-found') || '[]')); } catch (e) {}
-const save = () => { try { localStorage.setItem('dreamhome-found', JSON.stringify([...found])); } catch (e) {} };
+try { found = new Set(JSON.parse(localStorage.getItem('dreamhome-found-v2') || '[]')); } catch (e) {}
+// opening the page with ?reset starts the hunt over at 0
+if (new URLSearchParams(location.search).has('reset')) { found.clear(); history.replaceState(null, '', location.pathname); }
+const save = () => { try { localStorage.setItem('dreamhome-found-v2', JSON.stringify([...found])); } catch (e) {} };
+save();
 
 const hud = document.getElementById('hud');
 const fade = document.getElementById('fade');
@@ -1471,7 +1518,9 @@ function updateTitle() {
   document.getElementById('roomName').textContent = STAND[room].name;
   const q = ((Math.round(yaw / (Math.PI / 2)) % 4) + 4) % 4;
   document.getElementById('roomFloor').textContent = `${STAND[room].floor} · facing ${DIRN[q]}`;
-  document.getElementById('foundCount').textContent = `${found.size} of ${TOTAL} notes found`;
+  const fc = document.getElementById('foundCount');
+  if (found.size >= TOTAL) fc.innerHTML = `All ${TOTAL} found · <a href="levers.html">How I get there →</a>`;
+  else fc.textContent = `${found.size} of ${TOTAL} notes found`;
 }
 
 function arrive(key, keepView) {
@@ -1497,13 +1546,21 @@ function walk(door) {
 const lerpAngle = (a, b, t) => { let d = ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; return a + d * t; };
 
 /* ---------- notes ---------- */
-function closeNote() { document.querySelector('.note')?.remove(); }
+let finaleDue = false;
+function closeNote() {
+  const open = document.querySelector('.note'); if (!open) return;
+  open.remove();
+  if (finaleDue) { finaleDue = false; document.getElementById('finale').hidden = false; document.querySelector('#finale .go').focus({ preventScroll: true }); }
+}
+document.getElementById('finaleStay').addEventListener('click', () => { document.getElementById('finale').hidden = true; });
 function openNote(k, spot) {
   closeNote();
   const n = NOTES[room][k];
+  const before = found.size;
   found.add(`${room}-${k}`); save(); updateTitle(); spot.classList.add('done');
+  if (before < TOTAL && found.size >= TOTAL) { finaleDue = true; renderMenu(); }
   const el = document.createElement('div');
-  el.className = 'note'; el.setAttribute('role', 'dialog');
+  el.className = n.text.length > 110 ? 'note long' : 'note'; el.setAttribute('role', 'dialog');
   el.style.setProperty('--c', n.c); el.style.setProperty('--r', `${n.r}deg`);
   const b = spot.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
   if (x > innerWidth * .6) el.style.right = `${innerWidth - x + 30}px`; else el.style.left = `${x + 30}px`;
@@ -1517,10 +1574,20 @@ function openNote(k, spot) {
 const menu = document.getElementById('menu');
 function renderMenu() {
   menu.innerHTML = '<h3>Ground floor</h3>' + ORDER.filter(k => STAND[k].floor !== 'Upper floor').map(k => `<button data-k="${k}" class="${k === room ? 'here' : ''}">${STAND[k].name}</button>`).join('') +
-    '<h3>Upper floor</h3>' + ORDER.filter(k => STAND[k].floor === 'Upper floor').map(k => `<button data-k="${k}" class="${k === room ? 'here' : ''}">${STAND[k].name}</button>`).join('');
+    '<h3>Upper floor</h3>' + ORDER.filter(k => STAND[k].floor === 'Upper floor').map(k => `<button data-k="${k}" class="${k === room ? 'here' : ''}">${STAND[k].name}</button>`).join('') +
+    (found.size >= TOTAL ? '<a class="levers" href="levers.html">How I get there →</a>' : '') +
+    (found.size ? '<button class="reset" type="button">↺ Reset notes to 0</button>' : '');
+}
+function resetNotes() {
+  found.clear(); save(); finaleDue = false; closeNote();
+  document.getElementById('finale').hidden = true;
+  setHotspots(); updateTitle(); renderMenu();
 }
 document.getElementById('menuBtn').addEventListener('click', e => { e.stopPropagation(); menu.hidden = !menu.hidden; });
-menu.addEventListener('click', e => { const b = e.target.closest('button[data-k]'); if (b) { menu.hidden = true; jump(b.dataset.k); } });
+menu.addEventListener('click', e => {
+  if (e.target.closest('button.reset')) { menu.hidden = true; resetNotes(); return; }
+  const b = e.target.closest('button[data-k]'); if (b) { menu.hidden = true; jump(b.dataset.k); }
+});
 
 /* ---------- doorways: hover to light them, click or tap to walk through ---------- */
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
@@ -1567,7 +1634,7 @@ view.addEventListener('wheel', e => { e.preventDefault(); camera.fov = THREE.Mat
 addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft') yaw += .25; if (e.key === 'ArrowRight') yaw -= .25;
   if (e.key === 'ArrowUp') pitch = Math.min(1.35, pitch + .15); if (e.key === 'ArrowDown') pitch = Math.max(-1.35, pitch - .15);
-  if (e.key === 'Escape') { closeNote(); menu.hidden = true; }
+  if (e.key === 'Escape') { closeNote(); menu.hidden = true; document.getElementById('finale').hidden = true; }
 });
 addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); });
 
