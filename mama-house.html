@@ -1282,7 +1282,7 @@ function buildLoft() {
 function buildHall() {
   const U = UPPER;
   rug(X(630), X(1420), Z(530), Z(575), 0xcfb48a, U);
-  for (const px of [710, 945]) plant(X(px), U, Z(495) + .3, .9);
+  plant(X(710), U, Z(495) + .3, .9);   // one plant only: the hall is narrow
   for (const [i, px] of [[3, 900], [0, 1170], [1, 1380]]) art(i, X(px), U + 1.55, Z(610) - .08, .5, .65, 'N');
   for (const [px, i] of [[700, 0], [1000, 6], [1300, 0]]) ceilingLight(X(px), Z(552), U + UPH, i, 10);
 }
@@ -1532,7 +1532,7 @@ for (let i = 0; i < NODES.length; i++) for (let j = i + 1; j < NODES.length; j++
   const a = NODES[i], b = NODES[j];
   if (a.fl !== b.fl || (a.door && b.door)) continue;
   const dist = Math.hypot(a.p.x - b.p.x, a.p.z - b.p.z);
-  if (dist < 2.3 && clearLine(a.p, b.p)) link(a, b);
+  if (dist < ((a.door || b.door) ? 2.8 : 2.3) && clearLine(a.p, b.p)) link(a, b);
 }
 // drop points you can't actually reach (inside a shower, boxed in by furniture)
 { const seen = new Set([stairFoot]), todo = [stairFoot];
